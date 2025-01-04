@@ -9,9 +9,6 @@ import requests
 from PIL import Image
 from ultralytics import YOLO
 
-from spire.pdf.common import *
-from spire.pdf import *
-
 # Function to read and extract data from the CSV file
 def read_csv(file_path):
     try:
@@ -32,7 +29,6 @@ def read_csv(file_path):
         return []
 
 def download_image_google_drive(image_url):
-    #https://drive.google.com/file/d/1CI5nI42KzIJDyMkAlPY0byPUB_Bvum5j/view?usp=drive_link
     id = image_url.split('=')[-1]
     
     if not id or len(id) < 2:
@@ -261,7 +257,6 @@ def remove_svg_namespace(svg_content):
     svg_content = re.sub(r'ns1:', '', svg_content)  # Remove ns1 prefix if present
     return svg_content
 
-# Function to update SVG fields by ID
 def generate_id(svg_template, output_file, name, email, user_id, bg, image_path):
     # Parse the SVG template
     ET.register_namespace('', 'http://www.w3.org/2000/svg')
@@ -274,10 +269,14 @@ def generate_id(svg_template, output_file, name, email, user_id, bg, image_path)
     # Update text fields
     name_elem = root.find(".//svg:text[@id='name']", namespace)
     if name_elem is not None:
+        if len(name) > 20:
+            name_elem.set("font-size", "11px")
         name_elem.text = name
 
     email_elem = root.find(".//svg:text[@id='email']", namespace)
     if email_elem is not None:
+        if len(email) > 30:
+            email_elem.set("font-size", "10px")
         email_elem.text = email
 
     id_elem = root.find(".//svg:text[@id='id']", namespace)
@@ -306,21 +305,21 @@ def generate_id(svg_template, output_file, name, email, user_id, bg, image_path)
     with open(output_file, 'w') as file:
         file.write(clean_svg)
         
-    print(f"SVG updated and saved to {output_file}")
+    print(f"SVG updated and saved to {output_file}") 
 
-def save_pdf(svg_file, output_file):
-    doc = PdfDocument()
-    # Load an SVG file
-    doc.LoadFromSvg(svg_file)
-
-    # Save the SVG file to PDF format
-    doc.SaveToFile(output_file, FileFormat.PDF)
-    # Close the PdfDocument object
-    doc.Close()
+def svg_to_pdf(svg_file, pdf_file):
+    try:
+        # Convert SVG to PDF
+        os.system(f"rsvg-convert -f pdf -o {pdf_file} {svg_file}")
+        print(f"PDF saved as {pdf_file}")
+    except Exception as e:
+        print(f"Error: {e}")
 
 
-# Example usage
 if __name__ == "__main__":
+    test_mode = True
+    test_size = 5
+    
     CSV_FILE = 'data/data.csv'
     TEMPLATE_FILE = "templates/card.svg"
     OUTPUT_FOLDER = "output"
@@ -346,9 +345,10 @@ if __name__ == "__main__":
                         entry['ID'], entry['Blood Group '],
                         image_path
                     )
-                    
-                    # if idx == count:
-                    #     break
+                    svg_to_pdf(output_path, f"{OUTPUT_PDF}/card_{entry['ID']}.pdf")
+
+                    if test_mode and idx >= test_size:
+                        break
         except KeyboardInterrupt as e:
             print(f"Error: {e}")
             with open('remaining_entries.csv', mode='a', newline='', encoding='utf-8') as file:
