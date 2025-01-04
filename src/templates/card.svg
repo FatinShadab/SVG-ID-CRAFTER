@@ -3000,7 +3000,7 @@
 		<text x="50%" text-anchor="middle" dominant-baseline="middle" transform="matrix(1 0 0 1 0 264)" fill="#FFFFFF" font-family="'Rockwell'" font-size="12" id="id">011222004</text>
 		<polygon fill="#F18700" points="222.3,248 163.7,290.2 50.6,290.2 -6.2,246.2 -8.1,333.6 222.9,334.8 		"/>
 		<rect x="-7.6" y="212.3" fill="#F18700" width="224.9" height="17.9"/>
-		<text x="50%" text-anchor="middle" dominant-baseline="middle" transform="matrix(1 0 0 1 0 222)" fill="#020202" font-family="'Poppins-BoldItalic'" font-size="10.9392" style="font-weight:bold;">General Member</text>
+		<text x="50%" text-anchor="middle" dominant-baseline="middle" transform="matrix(1 0 0 1 0 224)" fill="#020202" font-family="'Poppins-BoldItalic'" font-size="10.9392" style="font-weight:bold;">General Member</text>
 		<text x="50%" text-anchor="middle" dominant-baseline="middle" transform="matrix(1 0 0 1 0 278)" fill="#FFFFFF" font-family="'MyriadPro-Regular'" font-size="10" id="bg" >AB+</text>
 		<g>
 			<path fill="#FFFFFF" d="M93.1,6.5H82.9v9.5h10.2V6.5z M88.6,14.1h-1.1V8.3h1.1V14.1z"/>
