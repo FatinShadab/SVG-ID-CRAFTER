@@ -2,6 +2,7 @@ import os
 import re
 import csv
 import base64
+import json
 import xml.etree.ElementTree as ET
 
 import cv2
@@ -31,11 +32,19 @@ def read_csv(file_path):
 def download_image_google_drive(image_url):
     id = image_url.split('=')[-1]
     
-    if not id or len(id) < 2:
+    try:
         id = image_url.split('/')[-2]
-    
+    except Exception as e:
+        pass
+        
+    # print(image_url)
+    # print(id)
     downloadable_url = f"https://drive.google.com/uc?export=view&id={id}"
+    # print(downloadable_url)
     response = requests.get(downloadable_url)
+    
+    if response.status_code == 404:
+        return -1
     
     with open(f'temp.png', 'wb') as file:
         file.write(response.content)
@@ -174,7 +183,7 @@ def center_person_in_image(image_path):
     # Crop the image
     cropped_image = image[y_start:y_end, x_start:x_end]
 
-    final_image = cv2.resize(cropped_image, (600, 600))
+    final_image = cv2.resize(cropped_image, (400, 400))
 
     cv2.imwrite(image_path, final_image)
     print(f"Centered image saved as {image_path}")
@@ -317,8 +326,8 @@ def svg_to_pdf(svg_file, pdf_file):
 
 
 if __name__ == "__main__":
-    test_mode = True
-    test_size = 5
+    test_mode = False
+    test_size = 8
     
     CSV_FILE = 'data/data.csv'
     TEMPLATE_FILE = "templates/card.svg"
@@ -331,31 +340,26 @@ if __name__ == "__main__":
     extracted_data = read_csv(CSV_FILE)
     if extracted_data:
         print("Extracted Data from CSV:\n")
-        try:
-            for idx, entry in enumerate(extracted_data):
-                if "none" not in entry.values():
-                    print(f"Working on entry: {entry['ID']}\n")
-                    image_path = get_image(entry['Photo'])
-                    output_path = f"{OUTPUT_FOLDER}/card_{entry['ID']}.svg"
-                    
-                    generate_id(
-                        TEMPLATE_FILE,
-                        output_path,
-                        entry['Name'], entry['Gmail'],
-                        entry['ID'], entry['Blood Group '],
-                        image_path
-                    )
-                    svg_to_pdf(output_path, f"{OUTPUT_PDF}/card_{entry['ID']}.pdf")
-
-                    if test_mode and idx >= test_size:
-                        break
-        except KeyboardInterrupt as e:
-            print(f"Error: {e}")
-            with open('remaining_entries.csv', mode='a', newline='', encoding='utf-8') as file:
-                writer = csv.DictWriter(file, fieldnames=entry.keys())
-                if file.tell() == 0:
-                    writer.writeheader()  # Write header only if file is empty
-                for entry in extracted_data[idx:]:
-                    writer.writerow(entry)
-
-            exit(0)
+        for idx, entry in enumerate(extracted_data):
+            print(f"Working on entry: {(idx, entry['ID'])}\n")
+            image_path = get_image(entry['1:1'])
+            
+            if image_path == -1 or entry["Photo"] == "none":
+                with open(f"{OUTPUT_FOLDER}/missing_images.json", "a") as json_file:
+                    json.dump(entry, json_file)
+                    json_file.write("\n")
+                continue
+            
+            output_path = f"{OUTPUT_FOLDER}/card_{entry['ID']}.svg"
+            
+            generate_id(
+                TEMPLATE_FILE,
+                output_path,
+                entry['Name'], entry['Gmail'],
+                entry['ID'], entry['Blood Group '],
+                image_path
+            )
+            svg_to_pdf(output_path, f"{OUTPUT_PDF}/card_{entry['ID']}.pdf")
+            
+            if test_mode and idx >= test_size:
+                break
