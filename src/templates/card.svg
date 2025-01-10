@@ -3026,15 +3026,23 @@
 		</g>
 		<g>
 			<defs>
-				<polygon id="SVGID_140_" points="71,168.9 34.9,106.4 71,43.9 143.2,43.9 179.3,106.4 143.2,168.9 				"/>
+				<polygon id="SVGID_140_" points="71,168.9 34.9,106.4 71,43.9 143.2,43.9 179.3,106.4 143.2,168.9 "/>
 			</defs>
 			<clipPath id="SVGID_141_">
 				<use xlink:href="#SVGID_140_"  overflow="visible"/>
 			</clipPath>
 			<g clip-path="url(#SVGID_141_)">
-				<image 
-				id="image" overflow="visible" y="-15" width="100%" height="100%" >
-			</image>
+
+				<image
+				id="image"
+				x="35"
+				y="40"
+				width="150"
+				height="150"
+				clip-path="url(#clipPath)"
+				preserveAspectRatio="xMidYMid slice"
+			  />
+
 			</g>
 		</g>
 		<g>
